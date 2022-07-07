@@ -2,7 +2,7 @@
 # Cria usuario, adiciona chave publica para conexao SSH e entrada no sudoers.d
 - name: Adicionando usuario
   user:
-    name: eandreazi
+    name: "{{ usuario }}"
     comment: Erik Andreazi
     shell: /bin/bash
     password: "{{ 'Infra45@884' | password_hash('sha512') }}"
@@ -11,16 +11,16 @@
 
 - name: Adicionando chave SSH
   authorized_key:
-    user: eandreazi
+    user: "{{ usuario }}"
     state: present
     key: "{{ lookup('file', '/home/eandreazi/.ssh/id_rsa_vm-teste.pub') }}"
   become: yes
 
 - name: Crinado entradas no sudoers.d
   lineinfile:
-    path: /etc/sudoers.d/eandreazi
+    path: "/etc/sudoers.d/{{ grupo }}"
     create: yes
     state: present
-    line: '%eandreazi ALL=(ALL) NOPASSWD: ALL'
+    line: '%"{{ grupo }}" ALL=(ALL) NOPASSWD: ALL'
     validate: /usr/sbin/visudo -cf %s
   become: yes
