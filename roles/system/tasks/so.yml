@@ -1,0 +1,4 @@
+---
+- name: Desativando SELinux
+  selinux:
+    state: disabled
