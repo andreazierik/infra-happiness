@@ -1,0 +1,64 @@
+---
+- name: Instalacao do HTTPD e outros pacotes necessarios
+  yum:
+    name: [ "httpd", "httpd-devel", "apr", "apr-devel", "apr-util", "apr-util-devel", "gcc", "make", "libtool", "autoconf" ]
+    state: latest
+
+- name:
+  get_url:
+    url: https://dlcdn.apache.org/tomcat/tomcat-connectors/jk/tomcat-connectors-1.2.48-src.tar.gz
+    dest: /tmp/
+    checksum: sha512:955a830724a3902e29032a5d2e7603d3170334e8a383d314f6bf8539d53d9f7ee4cfa0b31cfc954acb0a13d9975ed2229de085d08de3885f8679b509924fde47
+
+- name:
+  unarchive:
+    src: /tmp/tomcat-connectors-1.2.48-src.tar.gz
+    dest: /opt/
+    remote_src: yes
+
+- name: Compilando MOD_JK e instalando no tomcat
+  script: compila_mod_jk.sh
+
+# - name: Ativando o HTTPD para iniciar automaticamente 
+#   systemd:
+#     state: started
+#     name: httpd
+#     enabled: yes
+
+- name: Baixando apache-tomcat-8.5.81
+  get_url:
+    url: https://dlcdn.apache.org/tomcat/tomcat-8/v8.5.81/bin/apache-tomcat-8.5.81.tar.gz
+    dest: /tmp/
+    checksum: sha512:729387275cce4a0900289722f6c70ebcf7aee924af671b110b8ea8577fd6d045d47f17d526c8db5fd41c8590102e7f5100e95e89f7fd511b941565812ecbed35
+
+- name: Descompactando apache-tomcat-8.5.81 em /opt/
+  unarchive:
+    src: /tmp/apache-tomcat-8.5.81.tar.gz
+    dest: /opt/
+    remote_src: yes
+    exclude: 
+      - webapps/docs
+      - webapps/examples
+      - webapps/host-manager
+
+- name: Alterando usuario dono da pasta /opt/apache-tomcat-8.5.81/
+  file:
+    path: /opt/apache-tomcat-8.5.81
+    state: directory
+    recurse: yes
+    owner: vagrant
+    group: vagrant
+    mode: '0644'
+
+- name: Alterando permissoes da pasta /opt/apache-tomcat-8.5.81/bin/
+  file:
+    path: /opt/apache-tomcat-8.5.81/bin
+    state: directory
+    recurse: yes
+    mode: '0755'
+
+- name: Criando link simbolico
+  file:
+    src: /opt/apache-tomcat-8.5.81
+    dest: /opt/tomcat
+    state: link
