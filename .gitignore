@@ -1,3 +1,6 @@
 .vagrant
 hosts
 Vagrantfile
+
+roles/webserver/files/apache-tomcat-8.5.81.tar.gz
+roles/webserver/files/tomcat-connectors-1.2.48-src.tar.gz
