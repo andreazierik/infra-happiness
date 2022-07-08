@@ -1,4 +1,8 @@
 ---
+- name: Alterando timezone para America/Sao_Paulo
+  timezone:
+    name: America/Sao_Paulo
+
 - name: Desativando SELinux
   selinux:
     state: disabled
