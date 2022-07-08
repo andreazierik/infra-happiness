@@ -3,3 +3,5 @@
 #   yum:
 #     name: epel-release
 #     state: latest
+- include_tasks: so.yml
+- include_tasks: user.yml
