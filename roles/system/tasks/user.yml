@@ -17,10 +17,7 @@
   become: yes
 
 - name: Crinado entradas no sudoers.d
-  lineinfile:
-    path: "/etc/sudoers.d/{{ grupo }}"
-    create: yes
-    state: present
-    line: '%"{{ grupo }}" ALL=(ALL) NOPASSWD: ALL'
-    validate: /usr/sbin/visudo -cf %s
+  template:
+    src: sudoers.j2
+    dest: "/etc/sudoers.d/{{ grupo }}"
   become: yes
