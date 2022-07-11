@@ -1,0 +1,11 @@
+---
+
+java: java-1.8.0-openjdk
+
+tomcat_user: tomcat
+tomcat_group: tomcat
+
+work_dir: /opt/
+
+tomcat_version: apache-tomcat-8.5.81.tar.gz
+tomcat_install_dir: /opt/apache-tomcat-8.5.81

@@ -1,62 +1,56 @@
 ---
-- name: Instalacao do HTTPD e outros pacotes necessarios
-  yum:
-    name: [ "httpd", "httpd-devel", "apr", "apr-devel", "apr-util", "apr-util-devel", "gcc", "make", "libtool", "autoconf", "vim" ]
-    state: latest
 
-- name:
-  unarchive:
-    src: tomcat-connectors-1.2.48-src.tar.gz
-    dest: /opt/
+- include_tasks: tomcat.yml
 
-- name: Compilando MOD_JK e instalando no tomcat
-  script: compila_mod_jk.sh
+# - name: Instalacao do HTTPD e outros pacotes necessarios
+#   yum:
+#     name: [ "httpd", "httpd-devel", "apr", "apr-devel", "apr-util", "apr-util-devel", "gcc", "make", "libtool", "autoconf", "vim" ]
+#     state: present
 
-- name: Ativando o HTTPD para iniciar automaticamente 
-  systemd:
-    state: started
-    name: httpd
-    enabled: yes
+# - name: Descompactando MOD_JK
+#   unarchive:
+#     src: tomcat-connectors-1.2.48-src.tar.gz
+#     dest: /opt/
 
-- name: Descompactando apache-tomcat-8.5.81 em /opt/
-  unarchive:
-    src: apache-tomcat-8.5.81.tar.gz
-    dest: /opt/
-    exclude: 
-      - webapps/docs
-      - webapps/examples
-      - webapps/host-manager
+# - name: Compilando MOD_JK e instalando no tomcat
+#   script: compila_mod_jk.sh
 
-- name: Criando link simbolico
-  file:
-    src: /opt/apache-tomcat-8.5.81/
-    dest: /opt/tomcat
-    owner: "{{ usuario }}"
-    group: "{{ grupo }}"
-    state: link
-    follow: False
+# - name: Ativando o HTTPD para iniciar automaticamente 
+#   systemd:
+#     state: started
+#     name: httpd
+#     enabled: yes
 
-# - name: Alterando usuario dono da pasta /opt/apache-tomcat-8.5.81/
+# - name: Criando link simbolico
 #   file:
-#     path: /opt/apache-tomcat-8.5.81
-#     state: directory
-#     recurse: yes
+#     src: /opt/apache-tomcat-8.5.81/
+#     dest: /opt/tomcat
 #     owner: "{{ usuario }}"
 #     group: "{{ grupo }}"
-#     mode: '0644'
+#     state: link
+#     follow: False
 
-# - name: Alterando permissoes da pasta /opt/apache-tomcat-8.5.81/bin/
-#   file:
-#     path: /opt/apache-tomcat-8.5.81/bin
-#     state: directory
-#     recurse: yes
-#     mode: '0755'
+# # - name: Alterando usuario dono da pasta /opt/apache-tomcat-8.5.81/
+# #   file:
+# #     path: /opt/apache-tomcat-8.5.81
+# #     state: directory
+# #     recurse: yes
+# #     owner: "{{ usuario }}"
+# #     group: "{{ grupo }}"
+# #     mode: '0644'
 
-- name: Criando servico do tomcat no systemd
-  template: 
-    src: tomcat.service.j2
-    dest: /etc/systemd/system/tomcat.service
+# # - name: Alterando permissoes da pasta /opt/apache-tomcat-8.5.81/bin/
+# #   file:
+# #     path: /opt/apache-tomcat-8.5.81/bin
+# #     state: directory
+# #     recurse: yes
+# #     mode: '0755'
 
-- name: Executando reload no systemd e ativando a unit do tomcat
-  systemd:
-    daemon_reload: yes
+# - name: Criando servico do tomcat no systemd
+#   template: 
+#     src: tomcat.service.j2
+#     dest: /etc/systemd/system/tomcat.service
+
+# - name: Executando reload no systemd e ativando a unit do tomcat
+#   systemd:
+#     daemon_reload: yes

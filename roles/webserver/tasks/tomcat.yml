@@ -1,0 +1,85 @@
+---
+- name: Instalacao do OpenJDK8
+  yum:
+    name: "{{ java }}"
+    state: present
+
+- name: Criando grupo tomcat
+  group:
+    name: "{{ tomcat_group }}"
+    state: present
+
+- name: Criando usuario tomcat
+  user:
+    name: "{{ tomcat_user }}"
+    group: "{{ tomcat_group }}"
+    shell: /usr/sbin/nologin
+    home: "{{ tomcat_install_dir }}"
+    create_home: no
+
+- name: Descompactando Apache-Tomcat-8.5.81
+  unarchive:
+    src: "https://dlcdn.apache.org/tomcat/tomcat-8/v8.5.81/bin/{{ tomcat_version }}"
+    dest: "{{ work_dir }}"
+    remote_src: yes
+    validate_certs: no
+    exclude: 
+      - webapps/docs
+      - webapps/examples
+      - webapps/host-manager
+      - webapps/manager
+
+- name: Copiando arquivos de configuracao do tomcat
+  copy:
+    src: "{{ item }}"
+    dest: "{{ tomcat_install_dir }}/conf/"
+  loop: 
+    - logging.properties
+    - server.xml
+    - tomcat-users.xml
+  notify: 
+    - restart tomcat
+
+- name: Baixando probe
+  get_url:
+    url: https://repo1.maven.org/maven2/com/github/psi-probe/psi-probe-web/3.5.9/psi-probe-web-3.5.9.war
+    dest: "{{ tomcat_install_dir}}/webapps/probe.war"
+
+- name: Copiando arquivos de variaveis do tomcat
+  copy:
+    src: setenv.sh
+    dest: "{{ tomcat_install_dir}}/bin/"
+  notify: 
+    - restart tomcat
+
+- name: Criando link simbolico
+  file:
+    src: "{{ tomcat_install_dir }}"
+    path: /opt/tomcat
+    owner: "{{ tomcat_user }}"
+    group: "{{ tomcat_group }}"
+    state: link
+    follow: False
+
+- name: Alterando permissoes no link do tomcat
+  file:
+    path: /opt/tomcat/
+    owner: "{{ tomcat_user }}"
+    group: "{{ tomcat_group }}"
+    state: directory
+    recurse: yes
+
+- name: Copiando servico to tomcat
+  template:
+    src: tomcat.service
+    dest: /etc/systemd/system/
+
+- name: Relendo configuracao no systemd
+  systemd:
+    daemon_reload: yes
+    
+- name: Iniciando tomcat
+  systemd:
+    name: tomcat.service
+    state: started
+    enabled: yes
