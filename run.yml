@@ -1,6 +1,6 @@
 ---
 - hosts: centos7
   roles:
-    # - system
+    - system
     - webserver
   become: yes

@@ -2,9 +2,16 @@
 
 - include_tasks: tomcat.yml
 
+- name: Update DuckDNS IP
+  cron:
+    name: Update DuckDNS IP
+    minute: "*/5"
+    job: "echo url=\"https://www.duckdns.org/update?domains=infra-tti&token=348f8987-8d65-4d6d-8661-0921d4eace34&ip=\" | curl -k -K -"
+
+
 # - name: Instalacao do HTTPD e outros pacotes necessarios
 #   yum:
-#     name: [ "httpd", "httpd-devel", "apr", "apr-devel", "apr-util", "apr-util-devel", "gcc", "make", "libtool", "autoconf", "vim" ]
+#     name: [ "httpd", "httpd-devel", "apr", "apr-devel", "apr-util", "apr-util-devel", "gcc", "make", "libtool", "autoconf" ]
 #     state: present
 
 # - name: Descompactando MOD_JK

@@ -2,8 +2,8 @@
 
 # {{ ansible_managed }}
 
-CATALINA_HOME=/opt/tomcat
-CATALINA_BASE=/opt/tomcat
+CATALINA_HOME={{ work_dir }}/tomcat
+CATALINA_BASE={{ work_dir }}/tomcat
 
 CATALINA_PID=$CATALINA_HOME/temp/tomcat.pid
 CATALINA_OUT=$CATALINA_HOME/logs/catalina_stdout_stderr.log

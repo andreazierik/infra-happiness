@@ -14,10 +14,10 @@
     name: "{{ tomcat_user }}"
     group: "{{ tomcat_group }}"
     shell: /usr/sbin/nologin
-    home: "{{ tomcat_install_dir }}"
+    home: "{{ work_dir }}/{{ tomcat_dir }}"
     create_home: no
 
-- name: Descompactando Apache-Tomcat-8.5.81
+- name: "Descompactando {{ tomcat_dir }}"
   unarchive:
     src: "https://dlcdn.apache.org/tomcat/tomcat-8/v8.5.81/bin/{{ tomcat_version }}"
     dest: "{{ work_dir }}"
@@ -32,7 +32,7 @@
 - name: Copiando arquivos de configuracao do tomcat
   copy:
     src: "{{ item }}"
-    dest: "{{ tomcat_install_dir }}/conf/"
+    dest: "{{ work_dir }}/{{ tomcat_dir }}/conf/"
   loop: 
     - logging.properties
     - server.xml
@@ -43,19 +43,20 @@
 - name: Baixando probe
   get_url:
     url: https://repo1.maven.org/maven2/com/github/psi-probe/psi-probe-web/3.5.9/psi-probe-web-3.5.9.war
-    dest: "{{ tomcat_install_dir}}/webapps/probe.war"
+    dest: "{{ work_dir }}/{{ tomcat_dir}}/webapps/probe.war"
+    tmp_dest: /tmp/
 
 - name: Copiando arquivos de variaveis do tomcat
-  copy:
-    src: setenv.sh
-    dest: "{{ tomcat_install_dir}}/bin/"
+  template:
+    src: setenv.sh.j2
+    dest: "{{ work_dir }}/{{ tomcat_dir}}/bin/setenv.sh"
   notify: 
     - restart tomcat
 
 - name: Criando link simbolico
   file:
-    src: "{{ tomcat_install_dir }}"
-    path: /opt/tomcat
+    src: "{{ work_dir }}/{{ tomcat_dir }}"
+    path: "{{ work_dir }}/tomcat"
     owner: "{{ tomcat_user }}"
     group: "{{ tomcat_group }}"
     state: link
@@ -63,7 +64,7 @@
 
 - name: Alterando permissoes no link do tomcat
   file:
-    path: /opt/tomcat/
+    path: "{{ work_dir }}/tomcat/"
     owner: "{{ tomcat_user }}"
     group: "{{ tomcat_group }}"
     state: directory
