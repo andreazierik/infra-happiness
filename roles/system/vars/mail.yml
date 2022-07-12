@@ -1,0 +1,7 @@
+---
+
+# Necessary packages
+packages:
+  - vim
+  - htop
+  - tmux

@@ -6,3 +6,13 @@
 - name: Desativando SELinux
   selinux:
     state: disabled
+
+- name: Install EPEL Repo
+  yum:
+    name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+    state: present
+
+- name: Install Necessary Packages
+  yum:
+    name: "{{ packages }}"
+    state: latest

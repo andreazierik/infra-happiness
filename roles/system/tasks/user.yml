@@ -7,17 +7,14 @@
     shell: /bin/bash
     password: "{{ 'Infra45@884' | password_hash('sha512') }}"
     state: present
-  become: yes
 
 - name: Adicionando chave SSH
   authorized_key:
     user: "{{ usuario }}"
     state: present
     key: "{{ lookup('file', '/home/eandreazi/.ssh/id_rsa_vm-teste.pub') }}"
-  become: yes
 
 - name: Crinado entradas no sudoers.d
   template:
     src: sudoers.j2
     dest: "/etc/sudoers.d/{{ grupo }}"
-  become: yes
